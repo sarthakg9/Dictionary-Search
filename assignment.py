@@ -49,7 +49,7 @@ class DictionaryTrie:
             next_word = current_word + char
             self._dfs_traversal(child_node, remaining_word[1:], next_word, results)
 
-    def find_similar_words(self, word, max_length_diff=2, max_typos=2, max_similarity_score=0.7):
+    def find_similar_words(self, word, max_length_diff=2, max_typos=2, max_similarity_score=0.75):
         all_words = self._get_all_words()
         similar_words = []
         for dict_word in all_words:
