@@ -138,7 +138,7 @@ def main():
             print(word)
 
     if not results and similar_words:
-        print("No exact matches found. Showing similar words:")
+        print("Showing similar words:")
         top_similar_words = sorted(similar_words, key=lambda x: x[1], reverse=True)[:10]
         for word, similarity_score in top_similar_words:
             if similarity_score > 0.5:
