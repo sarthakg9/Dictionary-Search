@@ -59,7 +59,7 @@ class DictionaryTrie:
 
 def build_dictionary():
     dictionary_trie = DictionaryTrie()
-    with open("data.txt", "r") as file:
+    with open("datafile.txt", "r") as file:
         for line in file:
             word = line.strip().lower()  # Remove leading/trailing whitespaces and convert to lowercase
             dictionary_trie.insert_word(word)
