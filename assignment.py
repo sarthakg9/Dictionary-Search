@@ -1,5 +1,3 @@
-import Levenshtein
-
 class DictionaryTrieNode:
     def __init__(self):
         self.children = {}
@@ -43,7 +41,7 @@ class DictionaryTrie:
         all_words = self._get_all_words()
         similar_words = []
         for dict_word in all_words:
-            distance = Levenshtein.distance(word, dict_word)
+            distance = self._calculate_similarity(word, dict_word)
             if distance <= threshold:
                 similar_words.append(dict_word)
         return similar_words
@@ -61,10 +59,36 @@ class DictionaryTrie:
             next_word = current_word + char
             self._dfs_collect_words(child_node, next_word, words)
 
+    @staticmethod
+    def _calculate_similarity(word1, word2):
+        len1 = len(word1)
+        len2 = len(word2)
+        dp = [[0] * (len2 + 1) for _ in range(len1 + 1)]
+
+        for i in range(len1 + 1):
+            dp[i][0] = i
+        for j in range(len2 + 1):
+            dp[0][j] = j
+
+        for i in range(1, len1 + 1):
+            for j in range(1, len2 + 1):
+                cost = 0 if word1[i - 1] == word2[j - 1] else 1
+                dp[i][j] = min(
+                    dp[i - 1][j] + 1,       # Deletion
+                    dp[i][j - 1] + 1,       # Insertion
+                    dp[i - 1][j - 1] + cost  # Substitution
+                )
+
+                if i > 1 and j > 1 and word1[i - 1] == word2[j - 2] and word1[i - 2] == word2[j - 1]:
+                    dp[i][j] = min(dp[i][j], dp[i - 2][j - 2] + cost)  # Transposition
+
+        return dp[len1][len2]
+
 def build_dictionary():
     dictionary_trie = DictionaryTrie()
     with open("datafile.txt", "r") as file:
         for line in file:
+            word = line
             word = line.strip().lower()  # Remove leading/trailing whitespaces and convert to lowercase
             dictionary_trie.insert_word(word)
     return dictionary_trie
@@ -88,3 +112,4 @@ if similar_words:
 
 if not results and not similar_words:
     print("No matches found.")
+
