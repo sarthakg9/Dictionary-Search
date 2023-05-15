@@ -3,11 +3,13 @@ class DictionaryTrieNode:
         self.children = {}
         self.is_word = False
 
+
 class DictionaryTrie:
     def __init__(self):
         self.root = DictionaryTrieNode()
 
     def insert_word(self, word):
+        """Inserts a word into the dictionary trie."""
         node = self.root
         for char in word:
             if char not in node.children:
@@ -16,6 +18,7 @@ class DictionaryTrie:
         node.is_word = True
 
     def search_word(self, word):
+        """Searches for exact matches of a word in the dictionary trie."""
         node = self._get_prefix_node(word)
         if not node:
             return []
@@ -25,6 +28,7 @@ class DictionaryTrie:
         return results
 
     def _get_prefix_node(self, prefix):
+        """Traverses the trie to find the node representing the given prefix."""
         node = self.root
         for char in prefix:
             if char not in node.children:
@@ -33,6 +37,7 @@ class DictionaryTrie:
         return node
 
     def _dfs_traversal(self, node, remaining_word, current_word, results):
+        """Performs a depth-first traversal to find all words matching the prefix."""
         if not remaining_word:
             if node.is_word:
                 results.append(current_word)
@@ -44,8 +49,8 @@ class DictionaryTrie:
             next_word = current_word + char
             self._dfs_traversal(child_node, remaining_word[1:], next_word, results)
 
-
     def find_similar_words(self, word, max_length_diff=2, max_typos=2):
+        """Finds similar words in the dictionary trie based on length difference and typos."""
         all_words = self._get_all_words()
         similar_words = []
         for dict_word in all_words:
@@ -57,13 +62,14 @@ class DictionaryTrie:
         similar_words.sort(key=lambda x: x[1], reverse=True)
         return [word for word, _ in similar_words]
 
-
     def _get_all_words(self):
+        """Returns a list of all words in the dictionary trie."""
         words = []
         self._dfs_collect_words(self.root, '', words)
         return words
 
     def _dfs_collect_words(self, node, current_word, words):
+        """Performs a depth-first traversal to collect all words in the trie."""
         if node.is_word:
             words.append(current_word)
 
@@ -73,6 +79,7 @@ class DictionaryTrie:
 
     @staticmethod
     def _calculate_similarity(word1, word2):
+        """Calculates the Levenshtein distance between two words."""
         len1 = len(word1)
         len2 = len(word2)
         dp = [[0] * (len2 + 1) for _ in range(len1 + 1)]
@@ -99,13 +106,16 @@ class DictionaryTrie:
             distance = float('inf')
 
         return distance
+
     @staticmethod
     def _calculate_similarity_score(word1, word2, distance):
+        """Calculates the similarity score between two words based on their distance."""
         max_len = max(len(word1), len(word2))
         return (max_len - distance) / max_len
 
 
 def build_dictionary():
+    """Builds a dictionary trie from a data file."""
     dictionary_trie = DictionaryTrie()
     with open("datafile.txt", "r") as file:
         for line in file:
@@ -113,7 +123,9 @@ def build_dictionary():
             dictionary_trie.insert_word(word)
     return dictionary_trie
 
+
 def main():
+    """Main function to search for words and find similar words in the dictionary."""
     dictionary = build_dictionary()
     search_term = input("Enter a word to search: ").lower()
 
@@ -133,5 +145,7 @@ def main():
     if not results and not similar_words:
         print("No matches found.")
 
+
 if __name__ == "__main__":
     main()
+
