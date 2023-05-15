@@ -49,7 +49,8 @@ class DictionaryTrie:
             next_word = current_word + char
             self._dfs_traversal(child_node, remaining_word[1:], next_word, results)
 
-    def find_similar_words(self, word, max_length_diff=2, max_typos=2, min_similarity_score=0.8):
+    def find_similar_words(self, word, max_length_diff=2, max_typos=2):
+        """Finds similar words to the given word in the dictionary trie."""
         all_words = self._get_all_words()
         similar_words = []
         for dict_word in all_words:
@@ -57,10 +58,9 @@ class DictionaryTrie:
                 distance = self._calculate_similarity(word, dict_word)
                 if distance is not None and distance <= max_typos:
                     similarity_score = self._calculate_similarity_score(word, dict_word, distance)
-                    if similarity_score >= min_similarity_score:
-                        similar_words.append((dict_word, similarity_score))
+                    similar_words.append((dict_word, similarity_score))
         similar_words.sort(key=lambda x: x[1], reverse=True)
-        return [word for word, _ in similar_words]
+        return similar_words
 
     def _get_all_words(self):
         """Returns a list of all words in the dictionary trie."""
@@ -137,10 +137,12 @@ def main():
         for word in results:
             print(word)
 
-    if similar_words:
-        print("Similar words:")
-        for word in similar_words[:10]:
-            print(word[0])
+    if not results and similar_words:
+        print("No exact matches found. Showing similar words:")
+        top_similar_words = sorted(similar_words, key=lambda x: x[1], reverse=True)[:10]
+        for word, similarity_score in top_similar_words:
+            print(f"{word}")
+            # print(f"{word} (Similarity Score: {similarity_score})") 
 
     if not results and not similar_words:
         print("No matches found.")
