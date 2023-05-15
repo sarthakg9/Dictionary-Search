@@ -16,10 +16,21 @@ class DictionaryTrie:
         node.is_word = True
 
     def search_word(self, word):
-        node = self.root
+        node = self._get_prefix_node(word)
+        if not node:
+            return []
+
         results = []
         self._dfs_traversal(node, word, '', results)
         return results
+
+    def _get_prefix_node(self, prefix):
+        node = self.root
+        for char in prefix:
+            if char not in node.children:
+                return None
+            node = node.children[char]
+        return node
 
     def _dfs_traversal(self, node, remaining_word, current_word, results):
         if not remaining_word:
@@ -32,10 +43,6 @@ class DictionaryTrie:
             child_node = node.children[char]
             next_word = current_word + char
             self._dfs_traversal(child_node, remaining_word[1:], next_word, results)
-
-        for char, child_node in node.children.items():
-            next_word = current_word + char
-            self._dfs_traversal(child_node, remaining_word, next_word, results)
 
     def find_similar_words(self, word, threshold=2):
         all_words = self._get_all_words()
@@ -86,30 +93,31 @@ class DictionaryTrie:
 
 def build_dictionary():
     dictionary_trie = DictionaryTrie()
-    with open("datafile.txt", "r") as file:
+    with open("data.txt", "r") as file:
         for line in file:
-            word = line
             word = line.strip().lower()  # Remove leading/trailing whitespaces and convert to lowercase
             dictionary_trie.insert_word(word)
     return dictionary_trie
 
-# Example usage:
-dictionary = build_dictionary()
-search_term = input("Enter a word to search: ").lower()
+def main():
+    dictionary = build_dictionary()
+    search_term = input("Enter a word to search: ").lower()
 
-results = dictionary.search_word(search_term)
-similar_words = dictionary.find_similar_words(search_term)
+    results = dictionary.search_word(search_term)
+    similar_words = dictionary.find_similar_words(search_term)
 
-if results:
-    print("Found words:")
-    for word in results:
-        print(word)
+    if results:
+        print("Exact matches:")
+        for word in results:
+            print(word)
 
-if similar_words:
-    print("Similar words:")
-    for word in similar_words:
-        print(word)
+    if similar_words:
+        print("Similar words:")
+        for word in similar_words:
+            print(word)
 
-if not results and not similar_words:
-    print("No matches found.")
+    if not results and not similar_words:
+        print("No matches found.")
 
+if __name__ == "__main__":
+    main()
