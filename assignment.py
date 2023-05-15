@@ -44,13 +44,14 @@ class DictionaryTrie:
             next_word = current_word + char
             self._dfs_traversal(child_node, remaining_word[1:], next_word, results)
 
-    def find_similar_words(self, word, threshold=2):
+    def find_similar_words(self, word, max_length_diff=2, max_typos=2):
         all_words = self._get_all_words()
         similar_words = []
         for dict_word in all_words:
-            distance = self._calculate_similarity(word, dict_word)
-            if distance <= threshold:
-                similar_words.append(dict_word)
+            if abs(len(dict_word) - len(word)) <= max_length_diff:
+                distance = self._calculate_similarity(word, dict_word)
+                if distance <= max_typos:
+                    similar_words.append(dict_word)
         return similar_words
 
     def _get_all_words(self):
@@ -89,7 +90,11 @@ class DictionaryTrie:
                 if i > 1 and j > 1 and word1[i - 1] == word2[j - 2] and word1[i - 2] == word2[j - 1]:
                     dp[i][j] = min(dp[i][j], dp[i - 2][j - 2] + cost)  # Transposition
 
-        return dp[len1][len2]
+        distance = dp[len1][len2]
+        if distance is None:
+            distance = float('inf')
+
+        return distance
 
 def build_dictionary():
     dictionary_trie = DictionaryTrie()
