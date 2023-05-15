@@ -1,4 +1,4 @@
-import difflib
+import Levenshtein
 
 class DictionaryTrieNode:
     def __init__(self):
@@ -39,10 +39,14 @@ class DictionaryTrie:
             next_word = current_word + char
             self._dfs_traversal(child_node, remaining_word, next_word, results)
 
-    def find_similar_words(self, word, threshold=0.7):
+    def find_similar_words(self, word, threshold=2):
         all_words = self._get_all_words()
-        matches = difflib.get_close_matches(word, all_words, cutoff=threshold)
-        return matches
+        similar_words = []
+        for dict_word in all_words:
+            distance = Levenshtein.distance(word, dict_word)
+            if distance <= threshold:
+                similar_words.append(dict_word)
+        return similar_words
 
     def _get_all_words(self):
         words = []
