@@ -131,6 +131,7 @@ def main():
 
     if search_term == "":
         print("Enter a word to search")
+        return
 
     results = dictionary.search_word(search_term)
     similar_words = dictionary.find_similar_words(search_term)
