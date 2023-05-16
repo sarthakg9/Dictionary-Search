@@ -18,14 +18,13 @@ class DictionaryTrie:
         node.is_word = True
 
     def search_word(self, word):
-        # Searches for exact matches of a word in the dictionary trie.
+    # Searches for exact matches of a word in the dictionary trie.
         node = self._get_prefix_node(word)
-        if not node:
-            return []
+        if not node or not node.is_word:
+            return []  # Return an empty list if no exact match is found
 
-        results = []
-        self._dfs_traversal(node, word, '', results)
-        return results
+        return [word]  # Return the word as a list if it is an exact match
+
 
     def _get_prefix_node(self, prefix):
         # Traverses the trie to find the node representing the given prefix.
@@ -35,19 +34,6 @@ class DictionaryTrie:
                 return None
             node = node.children[char]
         return node
-
-    def _dfs_traversal(self, node, remaining_word, current_word, results):
-        # Performs a depth-first traversal to find all words matching the prefix.
-        if not remaining_word:
-            if node.is_word:
-                results.append(current_word)
-            return
-
-        char = remaining_word[0]
-        if char in node.children:
-            child_node = node.children[char]
-            next_word = current_word + char
-            self._dfs_traversal(child_node, remaining_word[1:], next_word, results)
 
     def find_similar_words(self, word, max_length_diff=2, max_typos=2):
         # Finds similar words to the given word in the dictionary trie.
