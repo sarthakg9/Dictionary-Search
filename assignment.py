@@ -129,6 +129,9 @@ def main():
     dictionary = build_dictionary()
     search_term = input("Enter a word to search: ").lower()
 
+    if search_term == "":
+        print("Enter a word to search")
+
     results = dictionary.search_word(search_term)
     similar_words = dictionary.find_similar_words(search_term)
 
@@ -141,7 +144,7 @@ def main():
         print("Showing similar words:")
         top_similar_words = sorted(similar_words, key=lambda x: x[1], reverse=True)[:10]
         for word, similarity_score in top_similar_words:
-            if similarity_score > 0.5:
+            if similarity_score > 0:
                 print(f"{word}")
                 # print(f"{word} (Similarity Score: {similarity_score})") # Uncomment to show similarity score
 
